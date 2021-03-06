@@ -6,12 +6,23 @@ Local Adminstrator rights are necessary to install some of these.
 ## [Git](https://git-scm.com/downloads)
 
 You will want to use both GitHub (public) and the internal [GitLab](https://gitlab.phe.gov.uk)
-It may be helpful to setup an SSH keypair.
+It may be helpful to setup an SSH keypair for GitLab.
 
 1. generate ssh: 	`ssh-keygen -t ed25519 -C "alex.bhattacharya@phe.gov.uk"`
 1. copy ssh: 		`cat ~/.ssh/id_ed25519.pub | clip`
 1. paste ssh in gitlab ssh user profile page
 1. test: 		`ssh -T git@gitlab.phe.gov.uk`
+
+### VIM
+Vim is a CLI based text editor packaged up in Git Bash and Linux; [read this guide](https://github.com/damassi/learn-vim). 
+
+```vim
+# use vim to create a settings file
+vim ~\.vimrc
+
+# add the following settings
+set numbers
+```
 
 ## [R](https://cran.r-project.org/mirrors.html)
 The primary open-source programming used for scientific use and epidemiology. Can be used in conjunction with Python. 
@@ -21,6 +32,14 @@ The primary open-source programming used for scientific use and epidemiology. Ca
 + [Rtools](https://cran.r-project.org/bin/windows/Rtools/): This is necessary dependency for functional programming and development and is often a depenedency in R.
 
 I would recommend using the package manager [renv](https://rstudio.github.io/renv/articles/renv.html) right from the start. Use this to manage your packages on a project-by-project basis.
+
+```r
+# Run in R
+# everything else should be saved in projects
+
+	install.packages("renv")
+	install.packages("devtools")
+```
 
 ## [Python](https://www.python.org/downloads/)
 Download and install base python. You will be able to call it from PowerShell, Rstudio and Jupyter.
@@ -45,7 +64,8 @@ This is an integrated terminal which allows use of many CLI tools in a clean int
 
 ### Installation
 Run cmd.exe as Admin to install Chocolatey package manager; then use it to run the following:
-```
+
+```bash
 # using a package manager will allow updates in the future
 	`@"%SystemRoot%\System32\WindowsPowerShell\v1.0\powershell.exe" -NoProfile -InputFormat None -ExecutionPolicy Bypass -Command "iex ((New-Object System.Net.WebClient).DownloadString('https://chocolatey.org/install.ps1'))" && SET "PATH=%PATH%;%ALLUSERSPROFILE%\chocolatey\bin"`
 
@@ -62,9 +82,28 @@ Run cmd.exe as Admin to install Chocolatey package manager; then use it to run t
 Follow the microsoft guide for activation, for best results actviate WSL2.
 
 ### Linux distribution
-You will need to [manually install a Linux distribution as the Microsoft Store is unavailable](https://docs.microsoft.com/en-us/windows/wsl/install-manual). Follow the guide.
+You will need to [manually download a Linux distribution as the Microsoft Store is unavailable](https://docs.microsoft.com/en-us/windows/wsl/install-manual). [Follow the guide to install](https://docs.microsoft.com/en-us/windows/wsl/install-on-server).
 
+```powershell
+# Administrator: PowerShell
+cd $HOME
+
+## Download distro (Ubuntu 20.04)
+Invoke-WebRequest -Uri https://aka.ms/wslubuntu2004 -OutFile .\Downloads\Ubuntu.appx -UseBasicParsing
+
+## Open it
+Rename-Item .\Downloads\Ubuntu.appx .\Downloads\Ubuntu.zip
+Expand-Archive .\Downloads\Ubuntu.zip .\Ubuntu
+
+## Run it
+\Ubuntu\ubuntu2004.exe
+
+## add to PATH
+$userenv = [System.Environment]::GetEnvironmentVariable("Path", "User")
+[System.Environment]::SetEnvironmentVariable("PATH", $userenv + ";C:\Users\Administrator\Ubuntu", "User")
+```
 You will need to setup a user account for root access on the first time you run the distro.
+This is seperate from your AD account and is purely for managing the distro.
 
 #### Ubuntu 20.04
 ```
