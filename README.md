@@ -44,10 +44,20 @@ To run R within Jupyter, you need to make the R kernel accessible. This will be 
 This is an integrated CLI terminal which allows use of many tools in a clean interface.
 Huge quality of life improvement for all windows based CLI. You will need to download and install follwing instructions from the [GitHub](https://github.com/microsoft/terminal) page. 
 
-Run as Admin in cmd.exe to install Chocolatey:
+### Installation
+Run as cmd.exe as Admin to install Chocolatey; then use it to run the following:
+```
+# using a package manager will allow updates in the future
 `@"%SystemRoot%\System32\WindowsPowerShell\v1.0\powershell.exe" -NoProfile -InputFormat None -ExecutionPolicy Bypass -Command "iex ((New-Object System.Net.WebClient).DownloadString('https://chocolatey.org/install.ps1'))" && SET "PATH=%PATH%;%ALLUSERSPROFILE%\chocolatey\bin"`
+```
+Restart the terminal and run as Admin:
+```
+choco install microsoft-windows-terminal
+choco upgrade microsoft-windows-terminal 
 
-This will add it to the PATH then run as Admin: `choco install microsoft-windows-terminal`
+# this will allow us to run as LocalAdmin in WT as a profile
+choco install gsudo
+```
 
 ## [WSL](https://docs.microsoft.com/en-us/windows/wsl/install-win10#manual-installation-steps)
 Follow the microsoft guide for activation, for best results actviate WSL2.
