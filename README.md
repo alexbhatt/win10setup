@@ -5,13 +5,18 @@ Local Adminstrator rights are necessary to install some of these.
 
 ## [Git](https://git-scm.com/downloads)
 
-You will want to use both GitHub (public) and the internal [GitLab](https://gitlab.phe.gov.uk)
+You will want to use both GitHub and the internal [GitLab](https://gitlab.phe.gov.uk)
 It may be helpful to setup an SSH keypair for GitLab.
 
-1. generate ssh: 	`ssh-keygen -t ed25519 -C "alex.bhattacharya@phe.gov.uk"`
-1. copy ssh: 		`cat ~/.ssh/id_ed25519.pub | clip`
-1. paste ssh in gitlab ssh user profile page
-1. test: 		`ssh -T git@gitlab.phe.gov.uk`
+```bash
+# generate the SSH
+	ssh-keygen -t ed25519 -C "alex.bhattacharya@phe.gov.uk"
+# copy it 
+	cat ~/.ssh/id_ed25519.pub | clip
+# paste into the GitLab user profile page
+# test it
+	ssh -T git@gitlab.phe.gov.uk
+```
 
 ### VIM
 Vim is a CLI based text editor packaged up in Git Bash and Linux; [read this guide](https://github.com/damassi/learn-vim). 
@@ -39,6 +44,13 @@ I would recommend using the package manager [renv](https://rstudio.github.io/ren
 
 	install.packages("renv")
 	install.packages("devtools")
+```
+## Markdown outputs
+In order to render documents from code to PDF, word or slides, you will need an installation of [Pandoc](https://pandoc.org/installing.html) and [MiKTeX](https://miktex.org/)
+
+```powershell
+# Administrator: PowerShell
+choco install pandoc miktex
 ```
 
 ## [Python](https://www.python.org/downloads/)
@@ -79,10 +91,10 @@ Run cmd.exe as Admin to install Chocolatey package manager; then use it to run t
 ```
 
 ## [WSL](https://docs.microsoft.com/en-us/windows/wsl/install-win10#manual-installation-steps)
-Follow the microsoft guide for activation, for best results actviate WSL2.
+Follow the [microsoft guide](https://docs.microsoft.com/en-us/windows/wsl/install-win10), for best results actviate WSL2.
 
 ### Linux distribution
-You will need to [manually download a Linux distribution as the Microsoft Store is unavailable](https://docs.microsoft.com/en-us/windows/wsl/install-manual). [Follow the guide to install](https://docs.microsoft.com/en-us/windows/wsl/install-on-server).
+Once WSL is activated, you need to [manually download a Linux distribution as the Microsoft Store is unavailable](https://docs.microsoft.com/en-us/windows/wsl/install-manual). [Follow the guide to install](https://docs.microsoft.com/en-us/windows/wsl/install-on-server). The summary is below.
 
 ```powershell
 # Administrator: PowerShell
@@ -96,7 +108,7 @@ Rename-Item .\Downloads\Ubuntu.appx .\Downloads\Ubuntu.zip
 Expand-Archive .\Downloads\Ubuntu.zip .\Ubuntu
 
 ## Run it
-\Ubuntu\ubuntu2004.exe
+.\Ubuntu\ubuntu2004.exe
 
 ## add to PATH
 $userenv = [System.Environment]::GetEnvironmentVariable("Path", "User")
@@ -106,13 +118,14 @@ You will need to setup a user account for root access on the first time you run 
 This is seperate from your AD account and is purely for managing the distro.
 
 #### Ubuntu 20.04
-```
-## on first run
+```bash
+## on first running after setting root user
 sudo apt update && sudo apt upgrade && sudo apt autoremove
 
 ## analytic framework
 sudo apt install virtualbox
 sudo apt install git
+sudo apt install 
 
 ## docker dependencies
 sudo apt-get install \
@@ -124,9 +137,15 @@ sudo apt-get install \
 ```
 
 ### [Docker](https://www.docker.com/products/docker-desktop)
-Once downloaded and installed, you will need to run PowerShell as Administrator to add yourself to the correct usergroup. Without this, Docker will be unable to start. Note that WSL is a prerequiste step.
+Prerequsite: WSL 
 
-1. PowerShellAdmin: `net localgroup docker-users "alex.bhattacharya@phe.gov.uk" /add`
+```powershell
+# Administrator: PowerShell
+net localgroup docker-users "alex.bhattacharya@phe.gov.uk" /add
+```
+Docker will not start without these steps
+
+1. Add to user group
 1. RESTART the machine to enable the group changes
 1. RUN Docker Desktop; it will configure to run on startup after this
 
