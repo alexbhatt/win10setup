@@ -47,7 +47,13 @@ Set the GitBash profile in Windows Terminal to start in `%USERPROFILE%\\repos` t
 # allows us to run Administrator: PowerShell in Windows Terminal with password
 	choco install gsudo
 ```
+## VS Code
+Another code editor, but this is going to allow us to work in WSL and act as a python IDE.
 
+```sh
+# Administrator: PowerShell
+	choco install vscode -y
+```
 
 ## [Git](https://git-scm.com/downloads)
 Git is essential for version control.
