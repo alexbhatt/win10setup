@@ -3,6 +3,29 @@
 To ensure a clean and robust analytic environment a few dependencies are required.
 Local Adminstrator rights are necessary to install some of these.
 
+## [Windows Terminal](https://docs.microsoft.com/en-us/windows/terminal/get-started)
+This is an integrated terminal which allows use of many CLI tools in a clean interface. You will need to download and install follwing instructions from the [GitHub](https://github.com/microsoft/terminal) page. 
+
+### Installation
+Run cmd.exe as Admin to install Chocolatey package manager; then use it to run the following:
+
+```shell
+# Administrator: cmd
+# using a package manager will allow updates in the future
+	`@"%SystemRoot%\System32\WindowsPowerShell\v1.0\powershell.exe" -NoProfile -InputFormat None -ExecutionPolicy Bypass -Command "iex ((New-Object System.Net.WebClient).DownloadString('https://chocolatey.org/install.ps1'))" && SET "PATH=%PATH%;%ALLUSERSPROFILE%\chocolatey\bin"`
+
+# reset the terminal
+	refreshenv
+	
+	choco install microsoft-windows-terminal
+	choco upgrade microsoft-windows-terminal 
+
+# this will allow us to run as LocalAdmin in a WT profile
+	choco install gsudo
+```
+
+Once installed, you can set your profiles for the various tools in the settings.json.
+
 ## [Git](https://git-scm.com/downloads)
 
 You will want to use both GitHub and the internal [GitLab](https://gitlab.phe.gov.uk)
@@ -40,18 +63,20 @@ I would recommend using the package manager [renv](https://rstudio.github.io/ren
 
 ```r
 # Run in R
-# everything else should be saved in projects
+# use R projects to ensure version and package control
 
 	install.packages("renv")
 	install.packages("devtools")
 ```
-## Markdown outputs
+
+### Markdown outputs
 In order to render documents from code to PDF, word or slides, you will need an installation of [Pandoc](https://pandoc.org/installing.html) and [MiKTeX](https://miktex.org/)
 
 ```powershell
 # Administrator: PowerShell
 choco install pandoc miktex
 ```
+Having a simple text editor also helps. My go to is [Atom](https://atom.io/).
 
 ## [Python](https://www.python.org/downloads/)
 Download and install base python. You will be able to call it from PowerShell, Rstudio and Jupyter.
@@ -59,11 +84,18 @@ Download and install base python. You will be able to call it from PowerShell, R
 + PIP: This is your python package management tool and you will use this to get the rest of your python tools and updates. It comes packaged with the python installation. 
 
 ### Jupyter
-Lightweight IDE for Python and R notebooks.
+Lightweight IDE for Python and R notebooks run in your default browser.
 
-To install run in CLI: `pip install jupyterlab notebook`
+```powershell
+# install
+pip install jupyterlab notebook
 
-To run R within Jupyter, you need to make the R kernel accessible. This will be auto-detected by Jupyter afer its run in R.
+# run to launch
+jupyter notebook
+jupyter lab
+```
+
+To run R within Jupyter, you need to make the R kernel accessible. This will be auto-detected by Jupyter afer its run in R, and only needs to be done once per R installation.
 
 ```r 
 # Run in R
@@ -71,24 +103,6 @@ To run R within Jupyter, you need to make the R kernel accessible. This will be 
 	IRkernel::installspec()
 ```
 
-## [Windows Terminal](https://docs.microsoft.com/en-us/windows/terminal/get-started)
-This is an integrated terminal which allows use of many CLI tools in a clean interface. You will need to download and install follwing instructions from the [GitHub](https://github.com/microsoft/terminal) page. 
-
-### Installation
-Run cmd.exe as Admin to install Chocolatey package manager; then use it to run the following:
-
-```bash
-# using a package manager will allow updates in the future
-	`@"%SystemRoot%\System32\WindowsPowerShell\v1.0\powershell.exe" -NoProfile -InputFormat None -ExecutionPolicy Bypass -Command "iex ((New-Object System.Net.WebClient).DownloadString('https://chocolatey.org/install.ps1'))" && SET "PATH=%PATH%;%ALLUSERSPROFILE%\chocolatey\bin"`
-
-# Restart the terminal and run again as Admin:
-
-	choco install microsoft-windows-terminal
-	choco upgrade microsoft-windows-terminal 
-
-# this will allow us to run as LocalAdmin in a WT profile
-	choco install gsudo
-```
 
 ## [WSL](https://docs.microsoft.com/en-us/windows/wsl/install-win10#manual-installation-steps)
 Follow the [microsoft guide](https://docs.microsoft.com/en-us/windows/wsl/install-win10), for best results actviate WSL2.
