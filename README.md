@@ -12,13 +12,15 @@ This makes maintaining the tools and versions considerably easier.
 _If WinGet (developed my Microsoft) is available then this will be updated._
 
 ```sh
-# Administrator: cmd.exe
+# Administrator: PowerShell
 # install chocolatey
-	`@"%SystemRoot%\System32\WindowsPowerShell\v1.0\powershell.exe" -NoProfile -InputFormat None -ExecutionPolicy Bypass -Command "iex ((New-Object System.Net.WebClient).DownloadString('https://chocolatey.org/install.ps1'))" && SET "PATH=%PATH%;%ALLUSERSPROFILE%\chocolatey\bin"`
+	Set-ExecutionPolicy Bypass -Scope Process
+	Set-ExecutionPolicy Bypass -Scope Process -Force; [System.Net.ServicePointManager]::SecurityProtocol = [System.Net.ServicePointManager]::SecurityProtocol -bor 3072; iex ((New-Object System.Net.WebClient).DownloadString('https://chocolatey.org/install.ps1'))
 
-# general syntax
-	choco install packagename
-	choco upgrade packagename
+# show all installed packages
+	choco list -l
+	choco upgrade all
+
 ```
 
 ## [Windows Terminal](https://docs.microsoft.com/en-us/windows/terminal/get-started)
@@ -35,7 +37,7 @@ mkdir $HOME\repos
 ```
 Set the GitBash profile in Windows Terminal to start in `%USERPROFILE%\\repos` the rest will probaly want to start in `%USERPROFILE%`.
 
-```powershell
+```sh
 # Administrator: PowerShell/cmd
 # reset the terminal (imported by chocolatey)
 	refreshenv
@@ -51,7 +53,7 @@ Set the GitBash profile in Windows Terminal to start in `%USERPROFILE%\\repos` t
 Git is essential for version control.
 Both [GitHub](https://github.com/alexbhatt) and the internal [GitLab](https://gitlab.phe.gov.uk/alex.bhattacharya) use the same installation.
 
-```powershell
+```sh
 # Administrator: PowerShell/cmd
 	choco install git
 ```
@@ -106,7 +108,7 @@ Vim is a CLI text editor packaged up in GitBash and Linux that works through the
 Atom is a lightweight text editor made by Git. I like it.
 It has excellent packages for markdown and is very customisable.
 
-```powershell
+```sh
 # Administrator: PowerShell
 
 	choco install atom
@@ -118,7 +120,7 @@ It has excellent packages for markdown and is very customisable.
 	[System.Environment]::SetEnvironmentVariable("PATH", $userenv + ";$HOME\AppData\Local\atom\bin", "User")
 ```
 
-```powershell
+```sh
 # PowerShell
 
 # syntax highlighting
@@ -138,13 +140,12 @@ Can be used in conjunction with Python.
 + [Rtsudio](https://rstudio.com/products/rstudio/download/): This IDE can run both R and Python code. Also has great markdown support.
 + [Rtools](https://cran.r-project.org/bin/windows/Rtools/): This is necessary dependency for functional programming and development and is often a dependency in R.
 
-```powershell
+```sh
 # Administrator: PowerShell
 
-# Recommendation is to install these from website installers
-	choco install r.project
-	choco install r.studio
-	choco install rtools
+	choco install r.project -y
+	choco install rtools -y
+	choco install r.studio -y
 ```
 
 Use the package manager [renv](https://rstudio.github.io/renv/articles/renv.html) right from the start on a project-by-project basis. There is really no reason not to. Works brilliant with Docker.
@@ -152,7 +153,7 @@ Use the package manager [renv](https://rstudio.github.io/renv/articles/renv.html
 ```r
 # R
 
-# allow developement
+# allow development
 	install.packages("devtools")
 
 # manage packages
@@ -162,6 +163,7 @@ Use the package manager [renv](https://rstudio.github.io/renv/articles/renv.html
 
 # run python in R
 	install.packages("reticulate")
+
 
 ```
 
@@ -203,10 +205,10 @@ Python is useful to have installed even if not using as the primary data tool.
 	source .\Scripts\activate  # bash
 
 # add your Packages
-	pip install NumPy SciPy pandas # manage data
-	pip install Scikit-learn # machine learning
+	pip install numpy scipy pandas # manage data
+	pip install scikit-learn # machine learning
 	pip install tensorflow # machine learning; install not working
-	pip install Matplotlib seaborn # data visualisation
+	pip install plotly matplotlib seaborn # data visualisation
 
 # save the requirements
 	pip freeze > requirements.txt
@@ -221,7 +223,7 @@ Python is useful to have installed even if not using as the primary data tool.
 ### Jupyter
 Lightweight IDE for Python and R notebooks run in your default browser. These are very sharable.
 
-```powershell
+```sh
 # PowerShell
 	pip install jupyterlab notebook
 	pip install --user ipykernel
@@ -239,9 +241,6 @@ This will be auto-detected by Jupyter after its run in R, and only needs to be d
 	install.packages('IRkernel')
 	IRkernel::installspec()
 ```
-### Airflow
-Prerequisite: Python
-Airflow is a DAG manager for workflows.
 
 ## [Windows Subsystem for Linux (WSL)](https://docs.microsoft.com/en-us/windows/wsl/install-win10#manual-installation-steps)
 Follow the [microsoft guide](https://docs.microsoft.com/en-us/windows/wsl/install-win10), for best results activate WSL2.
@@ -253,7 +252,7 @@ It is necessary to allow us to send analysis to a kubernetes based system like t
 
 #### Install
 
-1. WSL activated
+1. WSL activated; can be done without, but its less efficient
 1. Download [`Docker Desktop Installer.exe`](https://www.docker.com/products/docker-desktop) and run as LocalAdmin
 1. Add to user group in Administrator: PowerShell
 1. RESTART the machine to enable the group changes
@@ -263,19 +262,61 @@ It is necessary to allow us to send analysis to a kubernetes based system like t
 # Administrator: PowerShell
 	net localgroup docker-users "alex.bhattacharya@phe.gov.uk" /add
 ```
+```sh
+docker image list
+docker pull IMAGENAME
+```
+### [Airflow](https://airflow.apache.org/docs/apache-airflow/stable/start/local.html)
++ Prerequisite: Python
++ Prerequisite: Docker
+
+Airflow is a DAG manager for data pipelines, it can be installed locally or via Docker.
+
+#### local install
+```sh
+# GitBash
+# setup a venv
+	python -m venv airflow_local
+	cd airflow_local
+	python -m pip --upgrade pip
+	source /Scripts/activate
+
+# https://airflow.apache.org/docs/apache-airflow/stable/start/local.html
+	export AIRFLOW_HOME=~/airflow
+	AIRFLOW_VERSION=2.0.1
+	PYTHON_VERSION="$(python --version | cut -d " " -f 2 | cut -d "." -f 1-2)"
+	CONSTRAINT_URL="https://raw.githubusercontent.com/apache/airflow/constraints-${AIRFLOW_VERSION}/constraints-${PYTHON_VERSION}.txt"
+	pip install "apache-airflow==${AIRFLOW_VERSION}" --constraint "${CONSTRAINT_URL}"
+
+# save the environment
+	pip freeze > requirements.txt
+```
+#### [docker install](https://airflow.apache.org/docs/apache-airflow/stable/start/docker.html)
+```sh
+# GitBash
+	mkdir airflow
+	cd airflow
+	curl -LfO 'https://airflow.apache.org/docs/apache-airflow/2.0.1/docker-compose.yaml'
+	mkdir ./dags ./logs ./plugins
+	echo -e "AIRFLOW_UID=$(id -u)\nAIRFLOW_GID=0" > .env
+	docker-compose up airflow-init
+	docker-compose up
+```
 
 ### Linux distribution
++ Prerequisite: WSL
+
 An alternative distro would be Debian, but Ubuntu is the most common.
 It is helpful to have a WSL Linux distro available for testing out containers.
 Note you may not have access to the wider system environment and AD access from within WSL.
 
-1. WSL actviated
+1. WSL activated
 1. [manually download a Linux distribution as the Microsoft Store is unavailable](https://docs.microsoft.com/en-us/windows/wsl/install-manual)
 1. [Follow the guide to install](https://docs.microsoft.com/en-us/windows/wsl/install-on-server)
 1. Setup root user account on the first time you run the distro, this is separate from your AD account and is purely for managing the distro in the closed environment.
 
 #### Ubuntu 20.04
-```powershell
+```sh
 # Administrator: PowerShell
 	cd $HOME
 
@@ -291,7 +332,7 @@ Note you may not have access to the wider system environment and AD access from 
 	[System.Environment]::SetEnvironmentVariable("PATH", $userenv + ";C:\Users\Administrator\Ubuntu", "User")
 
 # Run it
-.\AppData\Local\Packages\Ubuntu\ubuntu2004.exe
+	.\AppData\Local\Packages\Ubuntu\ubuntu2004.exe
 
 # set root user and password when prompted
 ```
