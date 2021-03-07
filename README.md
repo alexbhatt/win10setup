@@ -3,15 +3,17 @@
 To ensure a clean and robust analytic environment a few dependencies are required.
 Local Administrator rights are necessary to install some of these.
 Where possible, I have installed via code rather then using the *.exe installer.
+SQL Server Management Studio is not included here as that should be installed by ICT.
 
 ### [Chocolatey](https://chocolatey.org/)
 This is a Windows package manager for allowing us to install and update installations through the CLI for our toolkit.
 It _always_ requires LocalAdmin to run, and can be run in either `cmd.exe` or `PowerShell`.
 This makes maintaining the tools and versions considerably easier.
-_If a version of WinGet is available then this will be updated._
+_If WinGet (developed my Microsoft) is available then this will be updated._
 
 ```sh
 # Administrator: cmd.exe
+# install chocolatey
 	`@"%SystemRoot%\System32\WindowsPowerShell\v1.0\powershell.exe" -NoProfile -InputFormat None -ExecutionPolicy Bypass -Command "iex ((New-Object System.Net.WebClient).DownloadString('https://chocolatey.org/install.ps1'))" && SET "PATH=%PATH%;%ALLUSERSPROFILE%\chocolatey\bin"`
 
 # general syntax
@@ -20,9 +22,18 @@ _If a version of WinGet is available then this will be updated._
 ```
 
 ## [Windows Terminal](https://docs.microsoft.com/en-us/windows/terminal/get-started)
-This is an integrated terminal which allows use of many CLI tools in a clean interface.
+This is an integrated terminal which allows use of many CLI tools in a clean tab-based interface.
 You will need to download and install following instructions from the [GitHub](https://github.com/microsoft/terminal) page.
 Once installed, you can set your profiles for the various tools in the settings.json.
+
+```sh
+# PowerShell
+# Note your .config files will live in $HOME
+
+# create a base layer for all project repos
+mkdir $HOME\repos
+```
+Set the GitBash profile in Windows Terminal to start in `%USERPROFILE%\\repos` the rest will probaly want to start in `%USERPROFILE%`.
 
 ```powershell
 # Administrator: PowerShell/cmd
@@ -34,16 +45,18 @@ Once installed, you can set your profiles for the various tools in the settings.
 # allows us to run Administrator: PowerShell in Windows Terminal with password
 	choco install gsudo
 ```
+
+
 ## [Git](https://git-scm.com/downloads)
 Git is essential for version control.
-Both [GitHub](https://github.com/alexbhatt) and the internal [GitLab](https://gitlab.phe.gov.uk) use the same installation.
+Both [GitHub](https://github.com/alexbhatt) and the internal [GitLab](https://gitlab.phe.gov.uk/alex.bhattacharya) use the same installation.
 
 ```powershell
 # Administrator: PowerShell/cmd
 	choco install git
 ```
 
-Open and the config file
+Open and the config file and add the following to the profile.
 ```bash
 # GitBash
 	vim ~/.gitconfig
@@ -65,6 +78,7 @@ Open and the config file
 
 It may be helpful to setup an SSH keypair for GitLab in GitBash.
 Paste the SSH key into the [GitLab profile manually](https://gitlab.phe.gov.uk/profile/keys).
+
 ```bash
 # GitBash
 # generate the SSHs
@@ -76,14 +90,15 @@ Paste the SSH key into the [GitLab profile manually](https://gitlab.phe.gov.uk/p
 ```
 
 ### VIM
-Vim is a CLI text editor packaged up in GitBash and Linux; [read this guide](https://github.com/damassi/learn-vim).
+Vim is a CLI text editor packaged up in GitBash and Linux that works through the terminal; [read this guide](https://github.com/damassi/learn-vim). Its very helpful for quick edits.
 
-```vim
+```sh
 # GitBash
 # use vim to create a settings file
 	vim ~\.vimrc
-
-# add the following settings
+```
+```vim
+# vim persistent settings
 	set numbers
 ```
 
@@ -92,11 +107,16 @@ Atom is a lightweight text editor made by Git. I like it.
 It has excellent packages for markdown and is very customisable.
 
 ```powershell
-# Administrator: PowerShell/cmd
+# Administrator: PowerShell
+
 	choco install atom
+
+	refreshenv
+
+# add to apm and atom to PATH
+	$userenv = [System.Environment]::GetEnvironmentVariable("Path", "User")
+	[System.Environment]::SetEnvironmentVariable("PATH", $userenv + ";$HOME\AppData\Local\atom\bin", "User")
 ```
-LocalAdmin may be required to manually add `C:\Users\alex.bhattacharya\AppData\Local\atom\bin` to PATH after installation to access the atom/apm tools via the CLI.
-Alternatively, you can just use the Atom GUI.
 
 ```powershell
 # PowerShell
@@ -120,25 +140,34 @@ Can be used in conjunction with Python.
 
 ```powershell
 # Administrator: PowerShell/cmd
+
 # Recommendation is to install these from website installers
 	choco install r.project
 	choco install r.studio
 	choco install rtools
 ```
 
-I would recommend using the package manager [renv](https://rstudio.github.io/renv/articles/renv.html) right from the start on a project-by-project basis. There is really no reason not to.
+Use the package manager [renv](https://rstudio.github.io/renv/articles/renv.html) right from the start on a project-by-project basis. There is really no reason not to. Works brilliant with Docker.
 
 ```r
 # R
-	install.packages("renv")
+
+# allow developement
 	install.packages("devtools")
 
+# manage packages
+	install.packages("renv")
 # future updates of renv
 	renv::upgrade()
+
+# run python in R
+	install.packages("reticulate")
+
 ```
 
 ### RMarkdown outputs
-In order to render documents from code to PDF, word or slides, you will need an installation of [Pandoc](https://pandoc.org/installing.html) and [MiKTeX](https://miktex.org/)
+In order to render documents from code to PDF, word or slides, you will need an installation of [Pandoc](https://pandoc.org/installing.html) and [MiKTeX](https://miktex.org/).
+This is necessary for any automated reporting.
 
 ```bash
 # Administrator: PowerShell
@@ -149,7 +178,41 @@ In order to render documents from code to PDF, word or slides, you will need an 
 Download and install python via the exe installer; note this includes PIP.
 Python is useful to have installed even if not using as the primary data tool.
 
-__PIP__: This is your python package management tool and you will use this to get the rest of your python tools, packages and updates. Accessible via the CLI.
+### CLI tools
++ __pip__ is your python package management tool and you will use this to get the rest of your python tools, packages and updates.
++ __venv__ is your environment management tool, like renv, and will be used on a project basis.  
+
+```sh
+# for updating these
+	python -m pip install --upgrade pip
+# change to existing venv environment
+	python -m venv --upgrade $HOME\repos\VENVDIR
+```
+
+```sh
+# create a virtual environment
+	python -m venv $HOME\repos\penv
+	cd $HOME\repos\penv
+
+# activate the environment, you'll see (penv) in the CLI after its activated
+	.\Scripts\Activate.ps1 # PS
+	.\Scripts\Activate.bat # cmd
+	source .\bin\activate  # bash
+
+# add your Packages
+	pip install NumPy SciPy pandas Scikit-learn
+	pip install tensorflow # not working
+	pip install Matplotlib seaborn
+
+# save the requirements
+	pip freeze > requirements.txt
+
+# this will allow recall in the future using
+	python -m pip install -r requirements.txt
+
+# close up shop
+	deactivate
+```
 
 ### Jupyter
 Lightweight IDE for Python and R notebooks run in your default browser. These are very sharable.
@@ -197,15 +260,16 @@ It is necessary to allow us to send analysis to a kubernetes based system like t
 ```
 
 ### Linux distribution
-An alternative disto would be Debian.
+An alternative distro would be Debian, but Ubuntu is the most common.
 It is helpful to have a WSL Linux distro available for testing out containers.
-Note you may not have access to the wider system environment from within WSL.
+Note you may not have access to the wider system environment and AD access from within WSL.
 
 1. WSL actviated
 1. [manually download a Linux distribution as the Microsoft Store is unavailable](https://docs.microsoft.com/en-us/windows/wsl/install-manual)
 1. [Follow the guide to install](https://docs.microsoft.com/en-us/windows/wsl/install-on-server)
 1. Setup root user account on the first time you run the distro, this is separate from your AD account and is purely for managing the distro in the closed environment.
 
+#### Ubuntu 20.04
 ```powershell
 # Administrator: PowerShell
 	cd $HOME
@@ -214,7 +278,7 @@ Note you may not have access to the wider system environment from within WSL.
 	Invoke-WebRequest -Uri https://aka.ms/wslubuntu2004 -OutFile .\Downloads\Ubuntu.appx -UseBasicParsing
 
 # Open it and save in the user account folder
-	Rename-Item .\Downloads\Ubuntu.appx .\Downloads\Ubuntu.zip
+	Rename-Item .\Downloads\Ubuntu.appx Ubuntu.zip
 	Expand-Archive .\Downloads\Ubuntu.zip .\AppData\Local\Packages\Ubuntu
 
 # add to PATH
@@ -222,19 +286,18 @@ Note you may not have access to the wider system environment from within WSL.
 	[System.Environment]::SetEnvironmentVariable("PATH", $userenv + ";C:\Users\Administrator\Ubuntu", "User")
 
 # Run it
-	.\AppData\Local\Packages\Ubuntu\ubuntu2004.exe
+.\AppData\Local\Packages\Ubuntu\ubuntu2004.exe
 
 # set root user and password when prompted
 ```
-
-#### Ubuntu 20.04
 ```bash
 ## WSL2
+# updates the install with the core dependencies and installed programs
 sudo apt update && sudo apt upgrade && sudo apt autoremove
 
 ## analytic framework
 sudo apt install virtualbox
-sudo apt install git-all
+sudo apt install git
 sudo apt install
 
 ## docker dependencies
