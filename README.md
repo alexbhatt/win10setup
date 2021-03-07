@@ -1,40 +1,75 @@
-# Analytics Setup 
+# Windows 10 Analytic Setup
 
 To ensure a clean and robust analytic environment a few dependencies are required.
-Local Adminstrator rights are necessary to install some of these.
+Local Administrator rights are necessary to install some of these.
+Where possible, I have installed via code rather then using the *.exe installer.
 
-## [Windows Terminal](https://docs.microsoft.com/en-us/windows/terminal/get-started)
-This is an integrated terminal which allows use of many CLI tools in a clean interface. You will need to download and install follwing instructions from the [GitHub](https://github.com/microsoft/terminal) page. 
-
-### Installation
-Run cmd.exe as Admin to install Chocolatey package manager; then use it to run the following:
+### [Chocolatey](https://chocolatey.org/)
+This is a Windows package manager for allowing us to install and update installations through the CLI for our toolkit.
+It _always_ requires LocalAdmin to run, and can be run in either `cmd.exe` or `PowerShell`.
+This makes maintaining the tools and versions considerably easier.
+_If a version of WinGet is available then this will be updated._
 
 ```shell
-# Administrator: cmd
-# using a package manager will allow updates in the future
+# Administrator: cmd.exe
 	`@"%SystemRoot%\System32\WindowsPowerShell\v1.0\powershell.exe" -NoProfile -InputFormat None -ExecutionPolicy Bypass -Command "iex ((New-Object System.Net.WebClient).DownloadString('https://chocolatey.org/install.ps1'))" && SET "PATH=%PATH%;%ALLUSERSPROFILE%\chocolatey\bin"`
 
-# reset the terminal
-	refreshenv
-	
-	choco install microsoft-windows-terminal
-	choco upgrade microsoft-windows-terminal 
-
-# this will allow us to run as LocalAdmin in a WT profile
-	choco install gsudo
+# general syntax
+	choco install packagename
+	choco upgrade packagename
 ```
 
+## [Windows Terminal](https://docs.microsoft.com/en-us/windows/terminal/get-started)
+This is an integrated terminal which allows use of many CLI tools in a clean interface.
+You will need to download and install following instructions from the [GitHub](https://github.com/microsoft/terminal) page.
 Once installed, you can set your profiles for the various tools in the settings.json.
 
-## [Git](https://git-scm.com/downloads)
+```bash
+# Administrator: PowerShell/cmd
+# reset the terminal (imported by chocolatey)
+	refreshenv
 
-You will want to use both GitHub and the internal [GitLab](https://gitlab.phe.gov.uk)
-It may be helpful to setup an SSH keypair for GitLab.
+	choco install microsoft-windows-terminal
+
+# allows us to run Administrator: PowerShell in Windows Terminal with password
+	choco install gsudo
+```
+## [Git](https://git-scm.com/downloads)
+Git is essential for version control.
+Both [GitHub](https://github.com/alexbhatt) and the internal [GitLab](https://gitlab.phe.gov.uk) use the same installation.
 
 ```bash
-# generate the SSH
+# Administrator: PowerShell/cmd
+	choco install git
+```
+
+Set the config file
+```bash
+# GitBash
+	vim ~/.gitconfig
+```
+
+```vim
+# Git user global config file
+[user]
+	name = Alex Bhattacharya
+	email = alex.bhattacharya@phe.gov.uk
+
+# set usernames for various git instances
+[credential "https://github.com"]
+	username = alexbhatt
+
+[credential "https://gitlab.phe.gov.uk"]
+	username = alex.bhattacharya
+
+```
+
+It may be helpful to setup an SSH keypair for GitLab in GitBash.
+```bash
+# GitBash
+# generate the SSHs
 	ssh-keygen -t ed25519 -C "alex.bhattacharya@phe.gov.uk"
-# copy it 
+# copy it
 	cat ~/.ssh/id_ed25519.pub | clip
 # paste into the GitLab user profile page
 # test it
@@ -42,104 +77,145 @@ It may be helpful to setup an SSH keypair for GitLab.
 ```
 
 ### VIM
-Vim is a CLI based text editor packaged up in Git Bash and Linux; [read this guide](https://github.com/damassi/learn-vim). 
+Vim is a CLI text editor packaged up in GitBash and Linux; [read this guide](https://github.com/damassi/learn-vim).
 
 ```vim
+# GitBash
 # use vim to create a settings file
-vim ~\.vimrc
+	vim ~\.vimrc
 
 # add the following settings
-set numbers
+	set numbers
+```
+
+### [Atom](https://atom.io/)
+Atom is a lightweight text editor made by Git. I like it.
+It has excellent packages for markdown and is very customisable.
+
+```bash
+# Administrator: PowerShell/cmd
+	choco install atom
 ```
 
 ## [R](https://cran.r-project.org/mirrors.html)
-The primary open-source programming used for scientific use and epidemiology. Can be used in conjunction with Python. 
+The primary open-source programming used for scientific use and epidemiology.
+Can be used in conjunction with Python.
 
-### Also install
 + [Rtsudio](https://rstudio.com/products/rstudio/download/): This IDE can run both R and Python code. Also has great markdown support.
-+ [Rtools](https://cran.r-project.org/bin/windows/Rtools/): This is necessary dependency for functional programming and development and is often a depenedency in R.
++ [Rtools](https://cran.r-project.org/bin/windows/Rtools/): This is necessary dependency for functional programming and development and is often a dependency in R.
 
-I would recommend using the package manager [renv](https://rstudio.github.io/renv/articles/renv.html) right from the start. Use this to manage your packages on a project-by-project basis.
+```bash
+# Administrator: PowerShell/cmd
+# Recommendation is to install these from website installers
+	choco install r.project
+	choco install r.studio
+	choco install rtools
+```
+
+I would recommend using the package manager [renv](https://rstudio.github.io/renv/articles/renv.html) right from the start on a project-by-project basis. There is really no reason not to.
 
 ```r
-# Run in R
-# use R projects to ensure version and package control
-
+# R
 	install.packages("renv")
 	install.packages("devtools")
 ```
 
-### Markdown outputs
+### RMarkdown outputs
 In order to render documents from code to PDF, word or slides, you will need an installation of [Pandoc](https://pandoc.org/installing.html) and [MiKTeX](https://miktex.org/)
 
-```powershell
+```bash
 # Administrator: PowerShell
-choco install pandoc miktex
+	choco install pandoc miktex
 ```
-Having a simple text editor also helps. My go to is [Atom](https://atom.io/).
 
 ## [Python](https://www.python.org/downloads/)
 Download and install base python. You will be able to call it from PowerShell, Rstudio and Jupyter.
 
-+ PIP: This is your python package management tool and you will use this to get the rest of your python tools and updates. It comes packaged with the python installation. 
++ PIP: This is your python package management tool and you will use this to get the rest of your python tools and updates. It comes packaged with the python installation.
 
 ### Jupyter
 Lightweight IDE for Python and R notebooks run in your default browser.
 
-```powershell
-# install
-pip install jupyterlab notebook
+```bash
+# PowerShell
+	pip install jupyterlab notebook
 
 # run to launch
-jupyter notebook
-jupyter lab
+	jupyter notebook
+	jupyter lab
 ```
 
-To run R within Jupyter, you need to make the R kernel accessible. This will be auto-detected by Jupyter afer its run in R, and only needs to be done once per R installation.
+To run R within Jupyter, you need to make the R kernel accessible.
+This will be auto-detected by Jupyter after its run in R, and only needs to be done once per R installation.
 
-```r 
-# Run in R
+```r
+# R
 	install.packages('IRkernel')
 	IRkernel::installspec()
 ```
+### Airflow
+Prerequisite: Python
+Airflow is a DAG manager for workflows.
 
-
-## [WSL](https://docs.microsoft.com/en-us/windows/wsl/install-win10#manual-installation-steps)
+## [Windows Subsystem for Linux (WSL)](https://docs.microsoft.com/en-us/windows/wsl/install-win10#manual-installation-steps)
 Follow the [microsoft guide](https://docs.microsoft.com/en-us/windows/wsl/install-win10), for best results actviate WSL2.
 
-### Linux distribution
-Once WSL is activated, you need to [manually download a Linux distribution as the Microsoft Store is unavailable](https://docs.microsoft.com/en-us/windows/wsl/install-manual). [Follow the guide to install](https://docs.microsoft.com/en-us/windows/wsl/install-on-server). The summary is below.
+### [Docker](https://www.docker.com/products/docker-desktop)
+Docker is a container management system for reproducible environments.
+It is necessary to allow us to send analysis to a kubernetes based system like the PHE OpenShift high performance computer cluster.
+
+#### Install
+
+1. WSL activated
+1. Add to user group
+1. RESTART the machine to enable the group changes
+1. RUN Docker Desktop; it will configure to run on start-up after this
 
 ```powershell
 # Administrator: PowerShell
-cd $HOME
-
-## Download distro (Ubuntu 20.04)
-Invoke-WebRequest -Uri https://aka.ms/wslubuntu2004 -OutFile .\Downloads\Ubuntu.appx -UseBasicParsing
-
-## Open it
-Rename-Item .\Downloads\Ubuntu.appx .\Downloads\Ubuntu.zip
-Expand-Archive .\Downloads\Ubuntu.zip .\Ubuntu
-
-## Run it
-.\Ubuntu\ubuntu2004.exe
-
-## add to PATH
-$userenv = [System.Environment]::GetEnvironmentVariable("Path", "User")
-[System.Environment]::SetEnvironmentVariable("PATH", $userenv + ";C:\Users\Administrator\Ubuntu", "User")
+	net localgroup docker-users "alex.bhattacharya@phe.gov.uk" /add
 ```
-You will need to setup a user account for root access on the first time you run the distro.
-This is seperate from your AD account and is purely for managing the distro.
+
+### Linux distribution
+An alternative disto would be Debian.
+It is helpful to have a WSL Linux distro available for testing out containers.
+Note you may not have access to the wider system environment from within WSL.
+
+1. WSL actviated
+1. [manually download a Linux distribution as the Microsoft Store is unavailable](https://docs.microsoft.com/en-us/windows/wsl/install-manual)
+1. [Follow the guide to install](https://docs.microsoft.com/en-us/windows/wsl/install-on-server)
+1. Setup root user account on the first time you run the distro, this is separate from your AD account and is purely for managing the distro in the closed environment.
+
+```powershell
+# Administrator: PowerShell
+	cd $HOME
+
+# Download distro (Ubuntu 20.04)
+	Invoke-WebRequest -Uri https://aka.ms/wslubuntu2004 -OutFile .\Downloads\Ubuntu.appx -UseBasicParsing
+
+# Open it and save in the user account folder
+	Rename-Item .\Downloads\Ubuntu.appx .\Downloads\Ubuntu.zip
+	Expand-Archive .\Downloads\Ubuntu.zip .\AppData\Local\Packages\Ubuntu
+
+# add to PATH
+	$userenv = [System.Environment]::GetEnvironmentVariable("Path", "User")
+	[System.Environment]::SetEnvironmentVariable("PATH", $userenv + ";C:\Users\Administrator\Ubuntu", "User")
+
+# Run it
+	.\AppData\Local\Packages\Ubuntu\ubuntu2004.exe
+
+# set root user and password when prompted
+```
 
 #### Ubuntu 20.04
 ```bash
-## on first running after setting root user
+## WSL2
 sudo apt update && sudo apt upgrade && sudo apt autoremove
 
 ## analytic framework
 sudo apt install virtualbox
-sudo apt install git
-sudo apt install 
+sudo apt install git-all
+sudo apt install
 
 ## docker dependencies
 sudo apt-get install \
@@ -149,18 +225,3 @@ sudo apt-get install \
 	gnupg-agent \
 	software-properties-common
 ```
-
-### [Docker](https://www.docker.com/products/docker-desktop)
-Prerequsite: WSL 
-
-```powershell
-# Administrator: PowerShell
-net localgroup docker-users "alex.bhattacharya@phe.gov.uk" /add
-```
-Docker will not start without these steps
-
-1. Add to user group
-1. RESTART the machine to enable the group changes
-1. RUN Docker Desktop; it will configure to run on startup after this
-
-## Airflow
