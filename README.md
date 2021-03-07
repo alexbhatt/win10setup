@@ -295,21 +295,45 @@ Note you may not have access to the wider system environment and AD access from 
 
 # set root user and password when prompted
 ```
-```bash
+```sh
 ## WSL2
 # updates the install with the core dependencies and installed programs
-sudo apt update && sudo apt upgrade && sudo apt autoremove
+	sudo apt update && sudo apt -y upgrade && sudo apt autoremove
 
-## analytic framework
-sudo apt install virtualbox
-sudo apt install git
-sudo apt install
+# some common dependencies
+	sudo apt install wget curl
+	sudo apt install software-properties-common
+	sudo apt install apt-transport-https
+	sudo apt install gnupg-agent
+	sudo apt install ca-certificates
+	sudo apt install libcurl4-openssl-dev libcurl4-gnutls-dev libssl-dev libxml2-dev
+	sudo apt install unixodbc-dev msodbcsql17
 
-## docker dependencies
-sudo apt-get install \
-	apt-transport-https
-	ca-certificates \
-	curl \
-	gnupg-agent \
-	software-properties-common
+# install python
+	sudo apt update
+	sudo apt install libpython3-dev
+	sudo apt install -y python3 python3-pip python3-venv ipython
+
+	pip3 install --user jupyterlab NumPy SciPy pandas Matplotlib seaborn
+
+# to launch jupyter, need --no-browser since in WSL
+	jupyter lab --no-browser
+	http://localhost:8888/
+
+# install R
+# https://support.rstudio.com/hc/en-us/articles/360049776974-Using-RStudio-Server-in-Windows-WSL2
+	sudo apt install dirmngr
+	sudo apt-key adv --keyserver keyserver.ubuntu.com --recv-keys E298A3A825C0D65DFD57CBB651716619E084DAB9
+	sudo add-apt-repository 'deb https://cloud.r-project.org/bin/linux/ubuntu focal-cran40/'
+	sudo apt install -y r-base r-base-core r-recommended r-base-dev
+	sudo apti install -y gdebi-core build-essential
+
+# Install RStudio server
+	wget https://rstudio.org/download/latest/stable/server/bionic/rstudio-server-latest-amd64.deb
+	sudo gdebi rstudio-server-latest-amd64.deb
+	sudo rstudio-server start
+
+#   login using UNIX username:password
+	http://localhost:8787/
+
 ```
