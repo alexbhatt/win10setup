@@ -139,7 +139,7 @@ Can be used in conjunction with Python.
 + [Rtools](https://cran.r-project.org/bin/windows/Rtools/): This is necessary dependency for functional programming and development and is often a dependency in R.
 
 ```powershell
-# Administrator: PowerShell/cmd
+# Administrator: PowerShell
 
 # Recommendation is to install these from website installers
 	choco install r.project
@@ -175,7 +175,7 @@ This is necessary for any automated reporting.
 ```
 
 ## [Python](https://www.python.org/downloads/)
-Download and install python via the exe installer; note this includes PIP.
+Download and install python via the exe installer.
 Python is useful to have installed even if not using as the primary data tool.
 
 ### CLI tools
@@ -194,24 +194,28 @@ Python is useful to have installed even if not using as the primary data tool.
 	python -m venv $HOME\repos\penv
 	cd $HOME\repos\penv
 
+# add the jupyter kernel
+	python -m ipykernel install --user --name=penv
+
 # activate the environment, you'll see (penv) in the CLI after its activated
 	.\Scripts\Activate.ps1 # PS
 	.\Scripts\Activate.bat # cmd
-	source .\bin\activate  # bash
+	source .\Scripts\activate  # bash
 
 # add your Packages
-	pip install NumPy SciPy pandas Scikit-learn
-	pip install tensorflow # not working
-	pip install Matplotlib seaborn
+	pip install NumPy SciPy pandas # manage data
+	pip install Scikit-learn # machine learning
+	pip install tensorflow # machine learning; install not working
+	pip install Matplotlib seaborn # data visualisation
 
 # save the requirements
 	pip freeze > requirements.txt
 
-# this will allow recall in the future using
-	python -m pip install -r requirements.txt
-
 # close up shop
 	deactivate
+
+# this will allow recall of the environment in the future using
+	python -m pip install -r requirements.txt
 ```
 
 ### Jupyter
@@ -220,6 +224,7 @@ Lightweight IDE for Python and R notebooks run in your default browser. These ar
 ```powershell
 # PowerShell
 	pip install jupyterlab notebook
+	pip install --user ipykernel
 
 # run to launch
 	jupyter notebook
