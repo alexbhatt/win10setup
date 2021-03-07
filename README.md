@@ -10,7 +10,7 @@ It _always_ requires LocalAdmin to run, and can be run in either `cmd.exe` or `P
 This makes maintaining the tools and versions considerably easier.
 _If a version of WinGet is available then this will be updated._
 
-```shell
+```sh
 # Administrator: cmd.exe
 	`@"%SystemRoot%\System32\WindowsPowerShell\v1.0\powershell.exe" -NoProfile -InputFormat None -ExecutionPolicy Bypass -Command "iex ((New-Object System.Net.WebClient).DownloadString('https://chocolatey.org/install.ps1'))" && SET "PATH=%PATH%;%ALLUSERSPROFILE%\chocolatey\bin"`
 
@@ -24,7 +24,7 @@ This is an integrated terminal which allows use of many CLI tools in a clean int
 You will need to download and install following instructions from the [GitHub](https://github.com/microsoft/terminal) page.
 Once installed, you can set your profiles for the various tools in the settings.json.
 
-```bash
+```powershell
 # Administrator: PowerShell/cmd
 # reset the terminal (imported by chocolatey)
 	refreshenv
@@ -38,12 +38,12 @@ Once installed, you can set your profiles for the various tools in the settings.
 Git is essential for version control.
 Both [GitHub](https://github.com/alexbhatt) and the internal [GitLab](https://gitlab.phe.gov.uk) use the same installation.
 
-```bash
+```powershell
 # Administrator: PowerShell/cmd
 	choco install git
 ```
 
-Set the config file
+Open and the config file
 ```bash
 # GitBash
 	vim ~/.gitconfig
@@ -61,17 +61,16 @@ Set the config file
 
 [credential "https://gitlab.phe.gov.uk"]
 	username = alex.bhattacharya
-
 ```
 
 It may be helpful to setup an SSH keypair for GitLab in GitBash.
+Paste the SSH key into the [GitLab profile manually](https://gitlab.phe.gov.uk/profile/keys).
 ```bash
 # GitBash
 # generate the SSHs
 	ssh-keygen -t ed25519 -C "alex.bhattacharya@phe.gov.uk"
 # copy it
 	cat ~/.ssh/id_ed25519.pub | clip
-# paste into the GitLab user profile page
 # test it
 	ssh -T git@gitlab.phe.gov.uk
 ```
@@ -92,9 +91,24 @@ Vim is a CLI text editor packaged up in GitBash and Linux; [read this guide](htt
 Atom is a lightweight text editor made by Git. I like it.
 It has excellent packages for markdown and is very customisable.
 
-```bash
+```powershell
 # Administrator: PowerShell/cmd
 	choco install atom
+```
+LocalAdmin may be required to manually add `C:\Users\alex.bhattacharya\AppData\Local\atom\bin` to PATH after installation to access the atom/apm tools via the CLI.
+Alternatively, you can just use the Atom GUI.
+
+```powershell
+# PowerShell
+
+# syntax highlighting
+	apm install linter
+	apm install linter-markdown
+	apm install linter-ui-default
+
+# markdown support
+	apm install pp-markdown
+	apm install markdown-scroll-sync
 ```
 
 ## [R](https://cran.r-project.org/mirrors.html)
@@ -104,7 +118,7 @@ Can be used in conjunction with Python.
 + [Rtsudio](https://rstudio.com/products/rstudio/download/): This IDE can run both R and Python code. Also has great markdown support.
 + [Rtools](https://cran.r-project.org/bin/windows/Rtools/): This is necessary dependency for functional programming and development and is often a dependency in R.
 
-```bash
+```powershell
 # Administrator: PowerShell/cmd
 # Recommendation is to install these from website installers
 	choco install r.project
@@ -118,6 +132,9 @@ I would recommend using the package manager [renv](https://rstudio.github.io/ren
 # R
 	install.packages("renv")
 	install.packages("devtools")
+
+# future updates of renv
+	renv::upgrade()
 ```
 
 ### RMarkdown outputs
@@ -129,14 +146,15 @@ In order to render documents from code to PDF, word or slides, you will need an 
 ```
 
 ## [Python](https://www.python.org/downloads/)
-Download and install base python. You will be able to call it from PowerShell, Rstudio and Jupyter.
+Download and install python via the exe installer; note this includes PIP.
+Python is useful to have installed even if not using as the primary data tool.
 
-+ PIP: This is your python package management tool and you will use this to get the rest of your python tools and updates. It comes packaged with the python installation.
+__PIP__: This is your python package management tool and you will use this to get the rest of your python tools, packages and updates. Accessible via the CLI.
 
 ### Jupyter
-Lightweight IDE for Python and R notebooks run in your default browser.
+Lightweight IDE for Python and R notebooks run in your default browser. These are very sharable.
 
-```bash
+```powershell
 # PowerShell
 	pip install jupyterlab notebook
 
@@ -158,16 +176,18 @@ Prerequisite: Python
 Airflow is a DAG manager for workflows.
 
 ## [Windows Subsystem for Linux (WSL)](https://docs.microsoft.com/en-us/windows/wsl/install-win10#manual-installation-steps)
-Follow the [microsoft guide](https://docs.microsoft.com/en-us/windows/wsl/install-win10), for best results actviate WSL2.
+Follow the [microsoft guide](https://docs.microsoft.com/en-us/windows/wsl/install-win10), for best results activate WSL2.
 
 ### [Docker](https://www.docker.com/products/docker-desktop)
 Docker is a container management system for reproducible environments.
+It is completely agnostic.
 It is necessary to allow us to send analysis to a kubernetes based system like the PHE OpenShift high performance computer cluster.
 
 #### Install
 
 1. WSL activated
-1. Add to user group
+1. Download [`Docker Desktop Installer.exe`](https://www.docker.com/products/docker-desktop) and run as LocalAdmin
+1. Add to user group in Administrator: PowerShell
 1. RESTART the machine to enable the group changes
 1. RUN Docker Desktop; it will configure to run on start-up after this
 
