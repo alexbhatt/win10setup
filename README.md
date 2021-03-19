@@ -352,48 +352,38 @@ Note you may not have access to the wider system environment and AD access from 
 ```
 ##### Build your WSL Linux environment
 
-###### DNSfix.sh
+###### /home/DNSfix.sh
+
+Paste the following code after typing `sudo vim /home/DNSfix.sh`
+
 ```sh
-sudo bash
-	su
+## hotfix for DNS servers; will need to update once I can get wsl.conf working
 
-	echo "nameserver 8.8.8.8" | tee /etc/resolv.conf
-	echo "nameserver 8.8.4.4" | tee /etc/resolv.conf
-	echo "nameserver 208.67.222.222" | tee /etc/resolv.conf
+# remove the existing file
+sudo rm -Rf /etc/resolv.conf
 
+# creat a new one
+echo "[network]" | sudo tee /etc/resolv.conf
+echo "generateResolvConf = false" | sudo tee -a /etc/resolv.conf
+
+# add DNS servers
+## GoogleDNS
+echo "nameserver 8.8.8.8" | sudo tee -a /etc/resolv.conf
+echo "nameserver 8.8.4.4" | sudo tee -a /etc/resolv.conf
+
+## OpenDNS
+echo "nameserver 208.67.222.222" | sudo tee -a /etc/resolv.conf
+
+cat /etc/resolv.conf
 ```
+
+###### Ubuntu 20.04
 
 ```sh
 # WindowsTerminal: Ubuntu-20.04
 
 # The DNS servers dont work, so change them
-	curl google.com
-# enter root user mode
-	sudo bash
-	su
-
-	vim /etc/modprobe.d/disableipv6.conf
-	## use VIM to write the following to disable ipv6; :wq out
-		install ipv6 /bin/true
-
-# check its disabled (expect NO RESULT)
-	lsmod | grep ipv6
-
-# now set your DNS servers
-	vim /etc/resolv.conf
-	## use VIM to add googleDNS and OpenDNS, comment out existing; :wq out
-	# wsl.conf
-	# https://developers.google.com/speed/public-dns/docs/using
-		[network]
-		generateResolvConf = false
-		nameserver 8.8.8.8 # googleDNS
-		nameserver 8.8.4.4 # googleDNS
-		nameserver 208.67.222.222 #OpenDNS
-# check the write
-	cat /etc/resolv.conf
-	exit
-
-	curl google.com
+	source /home/DNSfix.sh
 
 # updates the install with the core dependencies and installed programs
 	sudo apt update && sudo apt -y upgrade && sudo apt autoremove
