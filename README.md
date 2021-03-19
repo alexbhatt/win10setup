@@ -47,13 +47,6 @@ Set the GitBash profile in Windows Terminal to start in `%USERPROFILE%\\repos` t
 # allows us to run Administrator: PowerShell in Windows Terminal with password
 	choco install gsudo
 ```
-## VS Code
-Another code editor, but this is going to allow us to work in WSL and act as a python IDE.
-
-```sh
-# Administrator: PowerShell
-	choco install vscode -y
-```
 
 ## [Git](https://git-scm.com/downloads)
 Git is essential for version control.
@@ -108,6 +101,13 @@ Vim is a CLI text editor packaged up in GitBash and Linux that works through the
 ```vim
 # vim persistent settings
 	set numbers
+```
+### VS Code
+Another code editor, but this is going to allow us to work in WSL and act as a python IDE. Once I get used to VSCode, I may drop Atom.
+
+```sh
+# Administrator: PowerShell
+choco install vscode -y
 ```
 
 ### [Atom](https://atom.io/)
@@ -185,10 +185,15 @@ This is necessary for any automated reporting.
 ## [Python](https://www.python.org/downloads/)
 Download and install python via the exe installer.
 Python is useful to have installed even if not using as the primary data tool.
+When we need to use python properly, we will want to use it through the WSL Linux kernel for a more robust toolset.
 
 ### CLI tools
++ __[pyenv](https://github.com/pyenv/pyenv)__ this will allow us to install and manage multiple python versions and environments
++ __poetry__ this will allow us to manage the virtual environments and dependencies
++ __pipenv__ similar to poetry; a dependency management tool
 + __pip__ is your python package management tool and you will use this to get the rest of your python tools, packages and updates.
 + __venv__ is your environment management tool, like renv, and will be used on a project basis.  
++ __conda__ an alternative tool to pip and venv; but has intel optimised packages for faster execution
 
 ```sh
 # for updating these
@@ -199,6 +204,7 @@ Python is useful to have installed even if not using as the primary data tool.
 
 ```sh
 # create a virtual environment
+# have a basic python install with a couple data science packages
 	python -m venv $HOME\repos\penv
 	cd $HOME\repos\penv
 
@@ -227,7 +233,7 @@ Python is useful to have installed even if not using as the primary data tool.
 ```
 
 ### Jupyter
-Lightweight IDE for Python and R notebooks run in your default browser. These are very sharable.
+Lightweight IDE for Python and R notebooks run in your default browser. These are very sharable, but will really not be using them full time. More like a scratchpad for analytic ideas.
 
 ```sh
 # PowerShell
@@ -321,7 +327,10 @@ Note you may not have access to the wider system environment and AD access from 
 1. [Follow the guide to install](https://docs.microsoft.com/en-us/windows/wsl/install-on-server)
 1. Setup root user account on the first time you run the distro, this is separate from your AD account and is purely for managing the distro in the closed environment.
 
+> NOTE: if you ever _really_ mess it up just run `wsl --unregister Ubuntu-20.04` in PowerShell and then run the `ubuntu2004.exe` and it will rebuild the base image
+
 #### Ubuntu 20.04
+##### Install distro
 ```sh
 # Administrator: PowerShell
 	cd $HOME
@@ -337,27 +346,92 @@ Note you may not have access to the wider system environment and AD access from 
 	$userenv = [System.Environment]::GetEnvironmentVariable("Path", "User")
 	[System.Environment]::SetEnvironmentVariable("PATH", $userenv + ";C:\Users\Administrator\Ubuntu", "User")
 
-# Run it
+# Run it and set root user and password when prompted
 	.\AppData\Local\Packages\Ubuntu\ubuntu2004.exe
 
-# set root user and password when prompted
 ```
+##### Build your WSL Linux environment
+
+###### DNSfix.sh
 ```sh
-## WSL2
+sudo bash
+	su
+
+	echo "nameserver 8.8.8.8" | tee /etc/resolv.conf
+	echo "nameserver 8.8.4.4" | tee /etc/resolv.conf
+	echo "nameserver 208.67.222.222" | tee /etc/resolv.conf
+
+```
+
+```sh
+# WindowsTerminal: Ubuntu-20.04
+
+# The DNS servers dont work, so change them
+	curl google.com
+# enter root user mode
+	sudo bash
+	su
+
+	vim /etc/modprobe.d/disableipv6.conf
+	## use VIM to write the following to disable ipv6; :wq out
+		install ipv6 /bin/true
+
+# check its disabled (expect NO RESULT)
+	lsmod | grep ipv6
+
+# now set your DNS servers
+	vim /etc/resolv.conf
+	## use VIM to add googleDNS and OpenDNS, comment out existing; :wq out
+	# wsl.conf
+	# https://developers.google.com/speed/public-dns/docs/using
+		[network]
+		generateResolvConf = false
+		nameserver 8.8.8.8 # googleDNS
+		nameserver 8.8.4.4 # googleDNS
+		nameserver 208.67.222.222 #OpenDNS
+# check the write
+	cat /etc/resolv.conf
+	exit
+
+	curl google.com
+
 # updates the install with the core dependencies and installed programs
 	sudo apt update && sudo apt -y upgrade && sudo apt autoremove
 
 # some common dependencies
-	sudo apt install wget curl
+	sudo apt install -y wget curl openssl
 	sudo apt install software-properties-common
 	sudo apt install apt-transport-https
 	sudo apt install gnupg-agent
 	sudo apt install ca-certificates
-	sudo apt install libcurl4-openssl-dev libcurl4-gnutls-dev libssl-dev libxml2-dev
+	sudo apt install -y libcurl4-openssl-dev libcurl4-gnutls-dev libssl-dev libxml2-dev
 	sudo apt install unixodbc-dev msodbcsql17
 
+# install python dependencies
+	sudo apt install -y make build-essential zlib1g-dev libbz2-dev libreadline-dev libsqlite3-dev llvm libncurses5-dev xz-utils tk-dev libxmlsec1-dev libffi-dev liblzma-dev
+
+# pyenv
+	git clone https://github.com/pyenv/pyenv.git ~/.pyenv
+	cd ~/.pyenv && src/configure && make -C src
+	echo 'export PYENV_ROOT="$HOME/.pyenv"' >> ~/.bash_profile
+	echo 'export PATH="$PYENV_ROOT/bin:$PATH"' >> ~/.bash_profile
+	echo -e 'if command -v pyenv 1>/dev/null 2>&1; then\n  eval "$(pyenv init -)"\nfi' >> ~/.bash_profile
+
+	## RESART the Environment
+
+# poetry
+	curl -sSL https://raw.githubusercontent.com/python-poetry/poetry/master/get-poetry.py | python -
+
+# pipenv
+	sudo apt install pipenv
+
+# Miniconda3
+	wget https://repo.anaconda.com/miniconda/Miniconda3-latest-Linux-x86_64.sh
+	bash Miniconda3-latest-Linux-x86_64.sh
+	source ~/.bashrc
+	rm Miniconda3-latest-Linux-x86_64.sh
+
 # install python
-	sudo apt update
 	sudo apt install libpython3-dev
 	sudo apt install -y python3 python3-pip python3-venv ipython
 
