@@ -384,6 +384,10 @@ cat /etc/resolv.conf
 
 # The DNS servers dont work, so change them
 	source /home/DNSfix.sh
+	
+# your Vim settings are here if you want to update
+# i like to add set number
+	sudo vim /etc/vim/vimrc
 
 # updates the install with the core dependencies and installed programs
 	sudo apt update && sudo apt -y upgrade && sudo apt autoremove
