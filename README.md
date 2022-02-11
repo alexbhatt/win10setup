@@ -441,7 +441,7 @@ cat /etc/resolv.conf
 	sudo apt-key adv --keyserver keyserver.ubuntu.com --recv-keys E298A3A825C0D65DFD57CBB651716619E084DAB9
 	sudo add-apt-repository 'deb https://cloud.r-project.org/bin/linux/ubuntu focal-cran40/'
 	sudo apt install -y r-base r-base-core r-recommended r-base-dev
-	sudo apti install -y gdebi-core build-essential
+	sudo apt install -y gdebi-core build-essential
 
 # Install RStudio server
 	wget https://rstudio.org/download/latest/stable/server/bionic/rstudio-server-latest-amd64.deb
