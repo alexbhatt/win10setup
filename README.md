@@ -398,7 +398,7 @@ cat /etc/resolv.conf
 	sudo apt install apt-transport-https
 	sudo apt install gnupg-agent
 	sudo apt install ca-certificates
-	sudo apt install -y libcurl4-openssl-dev libcurl4-gnutls-dev libssl-dev libxml2-dev
+	sudo apt install -y libcurl4-openssl-dev libcurl4-gnutls-dev libssl-dev libxml2-dev unixodbc-dev
 	sudo apt install unixodbc-dev msodbcsql17
 
 # install python dependencies
