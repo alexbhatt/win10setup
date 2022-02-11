@@ -401,6 +401,9 @@ cat /etc/resolv.conf
 	sudo apt install -y libcurl4-openssl-dev libcurl4-gnutls-dev libssl-dev libxml2-dev unixodbc-dev
 	sudo apt install unixodbc-dev msodbcsql17
 
+# enable git to work with Windows Credentials
+	git config --global credential.helper "/mnt/c/Program\ Files/Git/mingw64/libexec/git-core/git-credential-manager-core.exe"
+
 # install python dependencies
 	sudo apt install -y make build-essential zlib1g-dev libbz2-dev libreadline-dev libsqlite3-dev llvm libncurses5-dev xz-utils tk-dev libxmlsec1-dev libffi-dev liblzma-dev
 
