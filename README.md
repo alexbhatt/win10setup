@@ -63,11 +63,13 @@ Open and the config file and add the following to the profile.
 	vim ~/.gitconfig
 ```
 
+Paste the following to allow alternate usernames for GitLab and GitHub
+Remember ESC `:w` to save and ESC `:x` to exit
 ```vim
 # Git user global config file
 [user]
 	name = Alex Bhattacharya
-	email = alex.bhattacharya@phe.gov.uk
+	email = alex.bhattacharya@ukhsa.gov.uk
 
 # set usernames for various git instances
 [credential "https://github.com"]
