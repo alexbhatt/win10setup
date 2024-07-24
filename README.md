@@ -60,11 +60,13 @@ Both [GitHub](https://github.com/alexbhatt) and the internal [GitLab](https://gi
 Open and the config file and add the following to the profile.
 ```bash
 # GitBash
+	$HOME = /c/Users/$USERNAME
 	vim ~/.gitconfig
 ```
 
 Paste the following to allow alternate usernames for GitLab and GitHub
 Remember ESC `:w` to save and ESC `:x` to exit
+
 ```vim
 # Git user global config file
 [user]
